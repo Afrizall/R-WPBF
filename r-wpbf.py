@@ -58,7 +58,9 @@ class rusher_wpbf:
 
             for x in open(self.args.wordlist, errors="ignore").read().split("\n"):
 
-                Thread(target=self.req, args=(self.args.user, x)).start()
+                t = Thread(target=self.req, args=(self.args.user, x))
+                t.daemon = True
+                t.start()
                 delay(0.1)
 
         else:
