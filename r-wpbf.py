@@ -33,6 +33,7 @@ class rusher_wpbf:
         if "<name>isAdmin</name>" in x.text:
 
             print("[+] [Success] [{}] -> ( {} | {} )".format(self.args.target, user, passwd))
+            os._exit(1)
 
         else:
 
