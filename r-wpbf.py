@@ -78,7 +78,7 @@ class rusher_wpbf:
             if self.try_login < 5:
 
                 self.try_login = self.try_login + 1
-                self.req(user, passwd)
+                self.req(target, user, passwd)
 
             elif self.try_login > 5:
 
