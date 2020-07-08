@@ -118,11 +118,12 @@ class rusher_wpbf:
         parser.add_argument("-w", "--wordlist", required=True)
         parser.add_argument("-t", "--thread", required=True, type=int)
         args = parser.parse_args()
-        print("[*] Bruteforcing...")
 
         if os.path.isfile(args.target):
 
             if os.path.isfile(args.wordlist):
+
+                print("[*] Bruteforcing...")
 
                 with concurrent.futures.ThreadPoolExecutor(max_workers=args.thread) as executor:
 
@@ -140,6 +141,8 @@ class rusher_wpbf:
         else:
 
             if os.path.isfile(args.wordlist):
+
+                print("[*] Bruteforcing...")
 
                 self.total_process = len(open(args.wordlist).read().splitlines())
                 self.execution(args.target, args.wordlist, args.thread)
