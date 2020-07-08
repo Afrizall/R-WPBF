@@ -5,13 +5,13 @@
 Rusher WPBF ( WordPress Brute Force ) ( XML-RPC )
 ###
 ```bash
-python r-wpbf.py -x [target/list-target] -w [wordlist] -t [thread]
+python r-wpbf.py -x [target/list-target] -w [wordlist] -t [thread] -d [timeout]
 ```
 ###
 ```bash
-python r-wpbf.py -x https://www.target.com/ -w list.txt -t 10
+python r-wpbf.py -x https://www.target.com/ -w list.txt -t 10 -d 3
 ```
 OR
 ```bash
-python r-wpbf.py -x list-target.txt -w list.txt -t 10
+python r-wpbf.py -x list-target.txt -w list.txt -t 10 -d 3
 ```
