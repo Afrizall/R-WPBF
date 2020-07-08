@@ -77,16 +77,15 @@ class rusher_wpbf:
 
                 self.try_login += 1
                 self.req(target, user, passwd)
-                self.done_process += 1
 
             elif self.try_login > 3:
 
                 self.try_login = 0
                 self.done_process += 1
+                self.count_percent()
 
-            self.count_percent()
-            sys.stdout.write("\r[*] [Proccess] [ {}/{} | {}% ]".format(self.done_process, self.total_process, round(self.percent)))
-            sys.stdout.flush()
+        sys.stdout.write("\r[*] [Proccess] [ {}/{} | {}% ]".format(self.done_process, self.total_process, round(self.percent)))
+        sys.stdout.flush()
 
     def execution(self, target, thread):
         
