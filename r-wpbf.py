@@ -121,6 +121,8 @@ class rusher_wpbf:
         parser.add_argument("-t", "--thread", required=True, type=int)
         parser.add_argument("-d", "--timeout", required=True, type=int)
         self.args = parser.parse_args()
+        print("[*] [Thread: {}]".format(self.args.thread))
+        print("[*] [Timeout: {}]".format(self.args.timeout))
 
         if os.path.isfile(self.args.target):
 
