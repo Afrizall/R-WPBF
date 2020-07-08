@@ -85,7 +85,7 @@ class rusher_wpbf:
                 self.done_process += 1
 
             self.count_percent()
-            sys.stdout.write("\r[*] Proccess [ {}/{} | {}% ]".format(self.done_process, self.total_process, round(self.percent)))
+            sys.stdout.write("\r[*] [Proccess] [ {}/{} | {}% ]".format(self.done_process, self.total_process, round(self.percent)))
             sys.stdout.flush()
 
     def execution(self, target, thread):
@@ -99,9 +99,7 @@ class rusher_wpbf:
 
                 for x in open(self.args.wordlist).read().splitlines():
 
-                    if x != '':
-
-                        executor.submit(self.req, target, user, x)
+                    executor.submit(self.req, target, user, x)
 
         else:
 
@@ -127,7 +125,7 @@ class rusher_wpbf:
 
             if os.path.isfile(self.args.wordlist):
 
-                print("[*] Bruteforcing...")
+                print("[*] [Bruteforcing]")
 
                 with concurrent.futures.ThreadPoolExecutor(max_workers=self.args.thread) as executor:
 
@@ -145,7 +143,7 @@ class rusher_wpbf:
 
             if os.path.isfile(self.args.wordlist):
 
-                print("[*] Bruteforcing...")
+                print("[*] [Bruteforcing]")
                 self.execution(self.args.target, self.args.thread)
 
             else:
