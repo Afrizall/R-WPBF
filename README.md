@@ -15,3 +15,8 @@ OR
 ```bash
 python r-wpbf.py -x list-target.txt -w list.txt -t 10 -d 3
 ```
+###
+Result Success
+```
+result-wp/success.txt
+```
