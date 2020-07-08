@@ -4,6 +4,8 @@
 ###
 Rusher WPBF ( WordPress Brute Force ) ( XML-RPC )
 ###
+![tool](https://raw.githubusercontent.com/Afrizall/R-WPBF/master/tool.jpeg)
+###
 ```bash
 python r-wpbf.py -x [target/list-target] -w [wordlist] -t [thread] -d [timeout]
 ```
