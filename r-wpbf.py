@@ -93,7 +93,6 @@ class rusher_wpbf:
         if self.check_xmlrpc(target):
 
             user = self.get_user(target)
-
             self.total_process += len(open(self.args.wordlist).read().splitlines())
 
             with concurrent.futures.ThreadPoolExecutor(max_workers=thread) as executor:
@@ -147,7 +146,6 @@ class rusher_wpbf:
             if os.path.isfile(self.args.wordlist):
 
                 print("[*] Bruteforcing...")
-
                 self.execution(self.args.target, self.args.thread)
 
             else:
