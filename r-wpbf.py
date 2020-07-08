@@ -9,7 +9,7 @@ print("""
 |__/  |__/        |__/     \__/|__/      |_______/ |__/      
                                                              
 =============================================================
-[*] Rusher WPBF - XMLRPC.php | R&D ICWR - Afrizal F.A
+[*] [Rusher WPBF - XMLRPC.php] | [R&D ICWR - Afrizal F.A]
 =============================================================
 """)
 
@@ -149,7 +149,7 @@ class rusher_wpbf:
 
                 print("[-] [Error] -> ( Not found {} )".format(self.args.wordlist))
 
-        print("\n[*] Done!")
+        print("\n[*] [Done]")
 
 if __name__ == "__main__":
     
